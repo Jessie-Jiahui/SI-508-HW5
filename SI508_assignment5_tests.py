@@ -131,11 +131,8 @@ class test_play_war_game(unittest.TestCase):
     # The play_war_game function should always return a tuple of a string and two integers
     def test_return_type(self):
         self.assertTrue(type(play_war_game()) is tuple)
-    def test_return_type_1(self):
         self.assertTrue(type(play_war_game()[0]) is str)
-    def test_return_type_1(self):
         self.assertTrue(type(play_war_game()[1]) is int)
-    def test_return_type_1(self):
         self.assertTrue(type(play_war_game()[2]) is int)
 
 
