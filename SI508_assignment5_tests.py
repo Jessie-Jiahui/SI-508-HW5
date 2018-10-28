@@ -13,45 +13,48 @@ from SI508_cards import *
 # NOTE: test class Card
 
 class test_Card(unittest.TestCase):
-    # suit_names should contain a list of strings that represent suits: Diamonds, Clubs, Hearts, Spades
-    def test_suit_names(self):
+    # suit_names should contain a list of strings that represent suits: Diamonds, Clubs, Hearts, Spades; rank_levels should contain a list of integers, 1-13; faces should contain a dictionary whose keys are numbers and whose values are strings.
+    def test_class_variables(self):
         self.assertEqual(Card().suit_names, ["Diamonds", "Clubs", "Hearts", "Spades"])
-    
-    # rank_levels should contain a list of integers, 1-13
-    def test_rank_levels(self):
-        self.assertEqual(Card().suit_names, [1,2,3,4,5,6,7,8,9,10,11,12,13])
+        self.assertEqual(Card().rank_levels, [1,2,3,4,5,6,7,8,9,10,11,12,13])
+        self.assertEqual(Card().faces, {1:"Ace", 11:"Jack", 12:"Queen", 13:"King"})
 
-    # faces should contain a dictionary whose keys are numbers and whose values are strings.
-    def test_faces(self):
-        self.assertEqual(Card().faces, {"1":"Ace", "11":"Jack", "12":"Queen", "13":"King"})
-
-    # self.suit, to hold the string name representing the suit of the card
-    def test_suit(self):
+    # The class Card's constructor should accept a number representing a suit and a number representing a rank.
+    def test_default_values(self):
         self.assertEqual(Card().suit, "Diamonds")
-
-    # self.rank, to hold EITHER the number or the string representation as appropriate of the card rank
-    def test_rank_option1(self):
         self.assertEqual(Card().rank, 2)
 
-    # self.rank, to hold EITHER the number or the string representation as appropriate of the card rank
-    def test_rank_option2(self):
+    # self.suit, to hold the string name representing the suit of the card; self.rank, to hold EITHER the number or the string representation as appropriate of the card rank; self.rank_num, to hold the NUMBER representing the rank (this value should always be an integer)
+    def test_instance_variables(self):
+        # test suit
+        self.assertTrue(type(Card().suit) is str)
+        # test rank
+        self.assertEqual(Card(rank=1).rank, "Ace")
+        self.assertEqual(Card(rank=11).rank, "Jack")
         self.assertEqual(Card(rank=12).rank, "Queen")
-
-    # self.rank_num, to hold the NUMBER representing the rank (this value should always be an integer)
-    def test_rank_num(self):
-        self.assertEqual(Card().rank_num, 2)   
-
-    # self.rank, to hold EITHER the number or the string representation as appropriate of the card rank
-    def test_rank_num(self):
-        self.assertEqual(Card(rank=12).rank_num, 12)
+        self.assertEqual(Card(rank=13).rank, "King")
+        # test rank_num
+        self.assertTrue(type(Card().rank_num) is int)
+        for i in range(13):
+            self.assertEqual(Card(rank=i+1).rank_num, i+1)
 
     # The Card class has a string method, which should return a string e.g. "Ace of Spades" or "3 of Clubs", etc.
-    def test_string_method_option1(self):
-        self.assertEqual(Card(), "2 of Diamonds")
+    def test_card_string_method(self):
+        self.assertTrue(type(Card().__str__()) is str)
 
-    # The Card class has a string method, which should return a string e.g. "Ace of Spades" or "3 of Clubs", etc.
-    def test_string_method_option2(self):
-        self.assertEqual(Card(suit=3,rank=1), "Ace of Spades")
+        list_test = []
+        for suit in Card().suit_names:
+            for rank in Card().rank_levels:
+                if rank in [1,11,12,13]:
+                    list_test.append("{} of {}".format(Card().faces[rank], suit))
+                else:
+                    list_test.append("{} of {}".format(rank, suit))
+
+        list_generate = []
+        for suit in range(4):
+            for rank in range(13):
+                list_generate.append(Card(suit=suit,rank=rank+1).__str__())
+        self.assertEqual(list_generate, list_test)
 
 
 
@@ -61,30 +64,32 @@ class test_Deck(unittest.TestCase):
     # The Deck constructor creates one instance variable: self.cards, which should hold a list of Card objects when a Deck instance is created.
     def test_instance_variable(self):
         self.assertTrue(type(Deck().cards) is list)
-    def test_instance_variable(self):
-        self.assertTrue(type(Deck().cards[0]) is object)
+        self.assertEqual(type(Deck().cards[0]), type(Card()))
 
     # The Deck string method should return a multi-line string with one line for each printed representation of a card in the deck. So a complete deck should have a 52-line string of strings like "Ace of Diamonds", "Two of Diamonds", etc.
-    def test_string_method(self):
-        self.assertTrue(type(Deck()) is str)
-    def test_string_method_face(self):
+    def test_deck_string_method(self):
         faces_diction = {"Diamonds":0 ,"Clubs":0 ,"Hearts":0 ,"Spades":0}
         for face in Card().suit_names:
             for i in Deck().__str__().split("\n"):
                 if face in i:
                     faces_diction[face] += 1
-        self.assertEqual(faces_diction, {"Diamonds":14 ,"Clubs":14 ,"Hearts":14 ,"Spades":14})
+        self.assertEqual(faces_diction, {"Diamonds":13 ,"Clubs":13 ,"Hearts":13 ,"Spades":13})
 
     # Deck has a method pop_card which accepts an integer as input and has a default value such that the Deck will pop off the last (top) card of the deck
     def test_pop_card(self):
-        self.assertEqual(Deck().pop_card(), Deck().cards.pop(-1))  
+        # pop the last item
+        self.assertEqual(Deck().pop_card().__str__(), Deck().cards.pop(-1).__str__())  
+        # empty list after pop 52 times
+        deck = Deck()
+        for i in range(52):
+            deck.pop_card()
+        self.assertEqual(len(deck.cards), 0) 
 
     # Deck has a method replace_card which accepts a Card instance as input.
-    def test_replace_card_in(self):
+    def test_replace_card(self):
         Deck().replace_card(Card(suit=0,rank=2))
         self.assertEqual(len(Deck().cards), 52) 
 
-    def test_replace_card_not_in(self):
         deck = Deck()
         pop_item1 = deck.pop_card()
         pop_item2 = deck.pop_card()
@@ -93,15 +98,30 @@ class test_Deck(unittest.TestCase):
 
     # Deck has a method sort_cards
     def test_sort_cards(self):
-        Deck().shuffle()
-        self.assertEqual(Deck().sort_cards()[0:3], ["Ace of Diamonds","2 of Diamonds","3 of Diamonds"])
+        deck = Deck()
+        deck.shuffle()
+        deck.sort_cards()
+        self.assertEqual(deck.cards[0].__str__(), "Ace of Diamonds")
+        self.assertEqual(deck.cards[1].__str__(), "2 of Diamonds")
+        self.assertEqual(deck.cards[2].__str__(), "3 of Diamonds")
+
+    # Deck has a method sort_cards which should organize only the cards that are remaining in the deck (have NOT been removed)
+    def test_sort_cards_test_number(self):
+        deck = Deck()
+        deck.shuffle()
+        deck.pop_card()
+        deck.sort_cards()
+        self.assertEqual(len(deck.cards), 51)
 
     # Deck has a method deal_hand which takes a required input hand_size, an integer representing the number of cars in the hand.
-    def test_deal_hand_can(self):
-        self.assertEqual(Deck().deal_hand(52), True)
-    def test_deal_hand_cannot(self):
-        Deck().pop_card(2)
-        self.assertEqual(Deck().deal_hand(52), False)
+    def test_deal_hand(self):
+        # test return type
+        self.assertTrue(type(Deck().deal_hand(1)) is list)
+        # test two cases
+        self.assertEqual(Deck().deal_hand(52), Deck())
+        # deck = Deck()
+        # deck.pop_card()
+        # self.assertEqual(deck.deal_hand(52), Deck().)
 
 
 
