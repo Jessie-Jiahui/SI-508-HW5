@@ -1,5 +1,4 @@
 import random
-
 # SI 508
 # Provided cards code
 
