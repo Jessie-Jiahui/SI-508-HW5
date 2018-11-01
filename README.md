@@ -1,3 +1,5 @@
+Jiahui Zhou
+
 # SI508 Homework5
 #### This code to be tested is based on ideas about decks of "standard 52-deck" playing cards. You can read more about them, if you are unfamiliar, here: https://en.wikipedia.org/wiki/Standard_52-card_deck. I am supposed to write tests to ensure that all of these things in the description that CAN and SHOULD be tested are indeed working as they should. I should write those tests in the file SI508_assignment5_tests.py, including at least 12 test methods. 
 ## Getting Started
